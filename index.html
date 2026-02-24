@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para ti, Luisa</title>
+    <link rel="icon" type="image/webp" href="assets/hearth.webp">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&family=Caveat:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg: #fef9f9;
+            --pink-soft: #fff0f3;
+            --pink-light: #ffd6e0;
+            --pink-main: #ffb3c6;
+            --pink-accent: #ff8fab;
+            --text: #4a4a4a;
+            --text-light: #888;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --shadow: rgba(255, 179, 198, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Nunito", sans-serif;
+            background: linear-gradient(180deg, var(--bg) 0%, var(--pink-soft) 100%);
+            background-attachment: fixed;
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .floating-cat {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.12;
+            transition: opacity 0.5s;
+        }
+
+        .floating-cat.visible {
+            opacity: 0.2;
+        }
+
+        .cat-top-left {
+            top: 5%;
+            left: 3%;
+            width: 55px;
+            transform: rotate(-15deg);
+        }
+
+        .cat-top-right {
+            top: 8%;
+            right: 5%;
+            width: 45px;
+            transform: rotate(10deg);
+        }
+
+        .cat-mid-left {
+            top: 40%;
+            left: -10px;
+            width: 60px;
+            transform: rotate(-5deg);
+        }
+
+        .cat-mid-right {
+            top: 55%;
+            right: 2%;
+            width: 50px;
+            transform: rotate(8deg);
+        }
+
+        .cat-bottom-left {
+            bottom: 15%;
+            left: 5%;
+            width: 40px;
+        }
+
+        .cat-bottom-right {
+            bottom: 20%;
+            right: 8%;
+            width: 45px;
+            transform: rotate(-8deg);
+        }
+
+        .password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--pink-soft) 0%, #fff 50%, var(--pink-light) 100%);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .password-modal.hidden {
+            display: none;
+        }
+
+        .login-wrapper {
+            text-align: center;
+            max-width: 320px;
+            width: 100%;
+        }
+
+        .login-cat {
+            width: 110px;
+            margin-bottom: 20px;
+            animation: floatCat 3s ease-in-out infinite;
+            filter: drop-shadow(0 10px 20px var(--shadow));
+        }
+
+        @keyframes floatCat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .password-box {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 35px 28px;
+            box-shadow: 0 20px 60px var(--shadow);
+        }
+
+        .password-box h2 {
+            font-family: "Caveat", cursive;
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .password-box .subtitle {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+
+        .password-box input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid var(--pink-light);
+            border-radius: 16px;
+            font-size: 1rem;
+            text-align: center;
+            margin-bottom: 18px;
+            font-family: "Nunito", sans-serif;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .password-box input:focus {
+            outline: none;
+            border-color: var(--pink-main);
+            box-shadow: 0 0 0 4px rgba(255, 179, 198, 0.2);
+        }
+
+        .password-box input::placeholder {
+            color: #ccc;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, var(--pink-main), var(--pink-accent));
+            border: none;
+            border-radius: 16px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: "Nunito", sans-serif;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px var(--shadow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .error-msg {
+            color: #e57373;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .error-msg.show {
+            opacity: 1;
+        }
+
+        .section {
+            display: none;
+            min-height: 100vh;
+            padding: 30px 20px 50px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section.show {
+            display: block;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px 0 30px;
+        }
+
+        .header-cat {
+            width: 80px;
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(-5deg);
+            }
+
+            50% {
+                transform: translateY(-8px) rotate(5deg);
+            }
+        }
+
+        .date-pill {
+            display: inline-block;
+            background: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--pink-accent);
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .main-title {
+            font-family: "Caveat", cursive;
+            font-size: clamp(2.5rem, 11vw, 3.5rem);
+            line-height: 1.1;
+            margin-bottom: 10px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text) 0%, var(--pink-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-subtitle {
+            font-size: 1rem;
+            color: var(--text-light);
+            max-width: 280px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .messages-container {
+            max-width: 380px;
+            margin: 0 auto 30px;
+        }
+
+        .message-bubble {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 18px;
+            box-shadow: 0 10px 35px var(--shadow);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+
+        .message-bubble.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .message-bubble::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 25px;
+            width: 16px;
+            height: 16px;
+            background: var(--card-bg);
+            transform: rotate(45deg);
+            border-radius: 3px;
+        }
+
+        .msg-number {
+            position: absolute;
+            top: -10px;
+            right: 18px;
+            width: 26px;
+            height: 26px;
+            background: linear-gradient(135deg, var(--pink-main), var(--pink-accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .message-bubble p {
+            font-size: 1rem;
+            line-height: 1.75;
+        }
+
+        .message-bubble.final {
+            text-align: right;
+            background: linear-gradient(135deg, var(--pink-soft), white);
+        }
+
+        .message-bubble.final::before {
+            left: auto;
+            right: 25px;
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: var(--pink-accent);
+            margin-left: 2px;
+            animation: blink 0.7s infinite;
+            vertical-align: text-bottom;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .signature {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .signature p {
+            margin: 3px 0;
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+
+        .signature .name {
+            font-family: "Caveat", cursive;
+            font-size: 1.7rem;
+            color: var(--pink-accent);
+        }
+
+        .signature-cat {
+            width: 60px;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+
+        .msg-cat {
+            position: absolute;
+            width: 45px;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .msg-cat-1 {
+            bottom: -12px;
+            right: 12px;
+            transform: rotate(10deg);
+        }
+
+        .msg-cat-2 {
+            top: -18px;
+            left: 8px;
+            transform: rotate(-15deg);
+            width: 40px;
+        }
+
+        .msg-cat-3 {
+            bottom: -10px;
+            left: 15px;
+            transform: rotate(5deg);
+        }
+
+        .next-btn {
+            display: block;
+            width: fit-content;
+            margin: 25px auto;
+            padding: 14px 40px;
+            background: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--pink-accent);
+            cursor: pointer;
+            font-family: "Nunito", sans-serif;
+            box-shadow: 0 8px 30px var(--shadow);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .next-btn.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .next-btn:hover {
+            transform: translateY(-3px);
+            background: var(--pink-main);
+            color: white;
+        }
+
+        .moments-section {
+            text-align: center;
+            padding-top: 20px;
+        }
+
+        .section-header {
+            margin-bottom: 30px;
+        }
+
+        .section-header img {
+            width: 70px;
+            margin-bottom: 12px;
+            animation: floatCat 3s ease-in-out infinite;
+        }
+
+        .section-title {
+            font-family: "Caveat", cursive;
+            font-size: 2rem;
+            color: var(--text);
+        }
+
+        .moment-card {
+            max-width: 350px;
+            margin: 0 auto 25px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 15px 45px var(--shadow);
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
+            transition: all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .moment-card.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .moment-cat {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .moment-title {
+            font-family: "Caveat", cursive;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .moment-date {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 15px;
+        }
+
+        .moment-counter {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .counter-item {
+            background: linear-gradient(135deg, var(--pink-soft), white);
+            border-radius: 12px;
+            padding: 8px 12px;
+            min-width: 55px;
+        }
+
+        .counter-value {
+            font-family: "Caveat", cursive;
+            font-size: 1.4rem;
+            color: var(--pink-accent);
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .counter-label {
+            font-size: 0.65rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .final-wrapper {
+            position: relative;
+            padding-bottom: 100px;
+        }
+
+        .sticky-cat {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 30px 0 20px;
+        }
+
+        .sticky-cat img {
+            width: 100px;
+            border-radius: 50%;
+            animation: floatCat 3s ease-in-out infinite;
+            filter: drop-shadow(0 8px 20px var(--shadow));
+        }
+
+        .photo-gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            max-width: 350px;
+            margin: 0 auto 40px;
+            padding: 0 10px;
+        }
+
+        .photo-item {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px var(--shadow);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .photo-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .photo-caption {
+            padding: 15px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--pink-soft), white);
+        }
+
+        .photo-caption p {
+            font-family: "Caveat", cursive;
+            font-size: 1.2rem;
+            color: var(--text);
+        }
+
+        .final-message-container {
+            max-width: 350px;
+            margin: 0 auto;
+            padding: 80px 10px 60px;
+            margin-top: 60px;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s ease;
+        }
+
+        .final-message-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .final-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 30px 25px;
+            box-shadow: 0 20px 50px var(--shadow);
+            text-align: center;
+        }
+
+        .final-card h2 {
+            font-family: "Caveat", cursive;
+            font-size: 2.2rem;
+            color: var(--pink-accent);
+            margin-bottom: 20px;
+        }
+
+        .final-card p {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+
+        .final-card .signature-final {
+            text-align: right;
+            border-top: 2px dashed var(--pink-light);
+            padding-top: 18px;
+            margin-top: 15px;
+        }
+
+        .final-card .signature-final p {
+            margin: 5px 0;
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+
+        .final-card .signature-final .name {
+            font-family: "Caveat", cursive;
+            font-size: 1.9rem;
+            color: var(--pink-accent);
+        }
+
+        .together-timer {
+            background: var(--card-bg);
+            border: 2px solid var(--pink-light);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .together-timer h3 {
+            font-family: "Caveat", cursive;
+            font-size: 1.8rem;
+            color: var(--text);
+            margin-bottom: 18px;
+        }
+
+        .timer-display {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .timer-item {
+            background: white;
+            border: 2px solid var(--pink-light);
+            border-radius: 12px;
+            padding: 12px 10px;
+            min-width: 55px;
+        }
+
+        .timer-value {
+            font-family: "Caveat", cursive;
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--pink-accent);
+        }
+
+        .timer-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .heart-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .heart-particle svg {
+            width: 22px;
+            height: 22px;
+            fill: var(--pink-main);
+            animation: floatUp 3s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(0.5) rotate(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-120px) scale(1) rotate(25deg);
+            }
+        }
+
+        @media (max-width: 380px) {
+            .password-box {
+                padding: 28px 22px;
+            }
+
+            .login-cat {
+                width: 90px;
+            }
+
+            .message-bubble {
+                padding: 18px;
+            }
+
+            .moment-card {
+                padding: 20px;
+            }
+
+            .moment-cat {
+                width: 80px;
+                height: 80px;
+            }
+
+            .photo-item img {
+                height: 220px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <img src="assets/cat-owo.png" class="floating-cat cat-top-left" alt="">
+    <img src="assets/cat-sit.png" class="floating-cat cat-top-right" alt="">
+    <img src="assets/cat-feli.png" class="floating-cat cat-mid-left" alt="">
+    <img src="assets/cat-corazon.png" class="floating-cat cat-mid-right" alt="">
+    <img src="assets/cat-flor.png" class="floating-cat cat-bottom-left" alt="">
+    <img src="assets/cat-init.png" class="floating-cat cat-bottom-right" alt="">
+
+    <div id="passwordModal" class="password-modal">
+        <div class="login-wrapper">
+            <img src="assets/cat-love.png" class="login-cat" alt="Gatito">
+            <div class="password-box">
+                <h2>Hola, mi amor</h2>
+                <p class="subtitle">Esta página es solo para ti uwu</p>
+                <input type="password" id="passwordInput" placeholder="Escribe la contraseña" maxlength="20"
+                    autocomplete="off">
+                <button onclick="checkPassword()" class="btn-primary">Entrar</button>
+                <p id="errorMsg" class="error-msg">Contraseña incorrecta</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="messagesSection" class="section">
+        <div class="header">
+            <img src="assets/cat-corazon.png" class="header-cat" alt="">
+            <div class="date-pill">14 de Febrero, 2026</div>
+            <h1 class="main-title">Feliz San Valentín<br>Luichaa</h1>
+            <p class="header-subtitle">Cada momento contigo ha sido especial. Déjame contarte...</p>
+        </div>
+
+        <div class="messages-container" id="messagesContainer">
+            <div class="message-bubble" data-index="1">
+                <span class="msg-number">1</span>
+                <img src="assets/cat-feli.png" class="msg-cat msg-cat-1" alt="">
+                <p class="typing-text">Desde el primer momento que te vi, supe que algo especial iba a pasar. Cada
+                    día contigo es como un sueño del que no quiero despertar. Tu risa ilumina mis días más grises y tu
+                    amor me hace sentir completo.</p>
+            </div>
+
+            <div class="message-bubble" data-index="2">
+                <span class="msg-number">2</span>
+                <img src="assets/cat-owo.png" class="msg-cat msg-cat-2" alt="">
+                <p class="typing-text">Me enamoré de tu forma de ser, de cómo me haces reír sin esfuerzo, de cómo me
+                    entiendes con solo una mirada. Contigo descubrí que puedo amar, y es aún más hermoso
+                    de lo que imaginaba.</p>
+            </div>
+
+            <div class="message-bubble" data-index="3">
+                <span class="msg-number">3</span>
+                <img src="assets/cat-sit.png" class="msg-cat msg-cat-3" alt="">
+                <p class="typing-text">Cada momento a tu lado es un recuerdo que guardo con amor en mi corazón. Desde
+                    nuestras risas cuando me ves jugar, hasta las conversaciones profundas que compartimos, todo contigo
+                    tiene un significado especial.</p>
+            </div>
+            <div class="message-bubble" data-index="4">
+                <span class="msg-number">4</span>
+                <img src="assets/cat-sit.png" class="msg-cat msg-cat-1" alt="">
+                <p class="typing-text">Eres muy especial para mí, contigo todo es más hermoso, más especial, más valioso. </p>
+            </div>
+            <div class="message-bubble" data-index="5">
+                <span class="msg-number">5</span>
+                <img src="assets/cat-sit.png" class="msg-cat msg-cat-2" alt="">
+                <p class="typing-text">Te amo mucho mi vida :33 </p>
+            </div>
+
+            <div class="message-bubble final" data-index="5">
+                <p class="typing-text">Gracias por elegirme, por amarme y por hacerme feliz cada día.
+                    Quiero que sepas que eres lo más bonito que me ha pasado, y que cada latido de mi corazón es para
+                    ti. Te amo, Luichaa, hoy y siempre.</p>
+                <div class="signature">
+                    <p>Con todo mi amor,</p>
+                    <p class="name">Erick</p>
+                    <img src="assets/cat-init.png" class="signature-cat" alt="">
+                </div>
+            </div>
+        </div>
+
+        <button id="nextBtn1" class="next-btn" onclick="showMomentsSection()">Siguiente</button>
+    </div>
+
+    <div id="momentsSection" class="section">
+        <div class="moments-section">
+            <div class="section-header">
+                <img src="assets/cat-love.png" alt="">
+                <h2 class="section-title">Nuestros Momentos</h2>
+            </div>
+
+            <div id="momentsContainer">
+                <div class="moment-card" data-moment="1">
+                    <img src="assets/cats-momentos/cat-tome.png" class="moment-cat" alt="">
+                    <h3 class="moment-title">Tu primer "tome señora tome"</h3>
+                    <p class="moment-date">2 de Julio, 2025 - 6:04 PM</p>
+                    <div class="moment-counter">
+                        <div class="counter-item">
+                            <div class="counter-value" id="months1">--</div>
+                            <div class="counter-label">meses</div>
+                        </div>
+                        <div class="counter-item">
+                            <div class="counter-value" id="days1">--</div>
+                            <div class="counter-label">días</div>
+                        </div>
+                        <div class="counter-item">
+                            <div class="counter-value" id="hours1">--</div>
+                            <div class="counter-label">hrs</div>
+                        </div>
+                        <div class="counter-item">
+                            <div class="counter-value" id="mins1">--</div>
+                            <div class="counter-label">min</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="moment-card" data-moment="2">
+                    <img src="assets/cats-momentos/cat-teamo.png" class="moment-cat" alt="">
+                    <h3 class="moment-title">Nuestro primer "Te amo"</h3>
+                    <p class="moment-date">2 de Septiembre, 2025 - 10:22 AM</p>
+                    <div class="moment-counter">
+                        <div class="counter-item">
+                            <div class="counter-value" id="months2">--</div>
+                            <div class="counter-label">meses</div>
+                        </div>
+                        <div class="counter-item">
+                            <div class="counter-value" id="days2">--</div>
+                            <div class="counter-label">días</div>
+                        </div>
+                        <div class="counter-item">
+                            <div class="counter-value" id="hours2">--</div>
+                            <div class="counter-label">hrs</div>
+                        </div>
+                        <div class="counter-item">
+                            <div class="counter-value" id="mins2">--</div>
+                            <div class="counter-label">min</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="moment-card" data-moment="3">
+                    <img src="assets/cats-momentos/cat-valorant.png" class="moment-cat" alt="">
+                    <h3 class="moment-title">Te me declaraste en Valorant</h3>
+                    <p class="moment-date">27 de Agosto, 2025 - 8:28 PM</p>
+                    <div class="moment-counter">
+                        <div class="counter-item">
+                            <div class="counter-value" id="months3">--</div>
+                            <div class="counter-label">meses</div>
+                        </div>
+                        <div class="counter-item">
+                            <div class="counter-value" id="days3">--</div>
+                            <div class="counter-label">días</div>
+                        </div>
+                        <div class="counter-item">
+                            <div class="counter-value" id="hours3">--</div>
+                            <div class="counter-label">hrs</div>
+                        </div>
+                        <div class="counter-item">
+                            <div class="counter-value" id="mins3">--</div>
+                            <div class="counter-label">min</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="moment-card" data-moment="4">
+                    <img src="assets/cats-momentos/cat-beso.png" class="moment-cat" alt="">
+                    <h3 class="moment-title">Nuestro primer beso</h3>
+                    <p class="moment-date">21 de Septiembre, 2025 - 5:20 PM</p>
+                    <div class="moment-counter">
+                        <div class="counter-item">
+                            <div class="counter-value" id="months4">--</div>
+                            <div class="counter-label">meses</div>
+                        </div>
+                        <div class="counter-item">
+                            <div class="counter-value" id="days4">--</div>
+                            <div class="counter-label">días</div>
+                        </div>
+                        <div class="counter-item">
+                            <div class="counter-value" id="hours4">--</div>
+                            <div class="counter-label">hrs</div>
+                        </div>
+                        <div class="counter-item">
+                            <div class="counter-value" id="mins4">--</div>
+                            <div class="counter-label">min</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="nextBtn2" class="next-btn" onclick="showFinalSection()">Siguiente</button>
+        </div>
+    </div>
+
+    <div id="finalSection" class="section">
+        <div class="final-wrapper">
+            <div class="sticky-cat">
+                <img src="assets/cats-momentos/cat-teamo.png" alt="Gatito">
+            </div>
+
+            <div class="photo-gallery" id="photoGallery">
+                <div class="photo-item" data-photo="1">
+                    <img src="assets/fotos/IMG_20251217_085047.jpg" alt="Foto">
+                    <div class="photo-caption">
+                        <p>Eres la luz de mis días oscuros</p>
+                    </div>
+                </div>
+                <div class="photo-item" data-photo="2">
+                    <img src="assets/fotos/IMG_20251228_163549.jpg" alt="Foto">
+                    <div class="photo-caption">
+                        <p>Cada momento contigo es mágico</p>
+                    </div>
+                </div>
+                <div class="photo-item" data-photo="3">
+                    <img src="assets/fotos/IMG_20251228_163836.jpg" alt="Foto">
+                    <div class="photo-caption">
+                        <p>Tu sonrisa es mi lugar seguro</p>
+                    </div>
+                </div>
+                <div class="photo-item" data-photo="4">
+                    <img src="assets/fotos/WhatsApp Image 2026-02-05 at 3.00.54 PM.jpeg" alt="Foto">
+                    <div class="photo-caption">
+                        <p>Juntos somos muy felices</p>
+                    </div>
+                </div>
+
+                <div class="photo-item" data-photo="6">
+                    <img src="assets/fotos/WhatsApp Image 2026-02-05 at 3.00.56 PM.jpeg" alt="Foto">
+                    <div class="photo-caption">
+                        <p>Contigo encontré mi felicidad</p>
+                    </div>
+                </div>
+                <div class="photo-item" data-photo="6">
+                    <img src="assets/fotos/WhatsApp Image 2026-02-07 at 4.09.48 PM.jpeg" alt="Foto">
+                    <div class="photo-caption">
+                        <p>Somos estos jijiji</p>
+                    </div>
+                </div>
+                <div class="photo-item" data-photo="5">
+                    <img src="assets/fotos/WhatsApp Image 2026-02-05 at 3.00.55 PM.jpeg" alt="Foto">
+                    <div class="photo-caption">
+                        <p>Para siempre tú y yo, el amor de mi vida</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="final-message-container" id="finalMessage">
+                <div class="final-card">
+                    <h2>Para siempre juntos</h2>
+                    <p>Luisa, mi amor, quiero que seas feliz conmigo, lo único que quería era tenerte a mi lado. Nuestro
+                        primer "Te amo" fue el inicio de algo hermoso, y nuestro primer beso selló un amor que sé que
+                        durará para siempre. Gracias por ser mi todo. Te prometo seguir
+                        amándote con la misma intensidad todos los días de mi vida. Eres mi hogar, mi paz, mi felicidad.
+                        Te amo infinito, Luichaa. 💕</p>
+                    <div class="together-timer">
+                        <h3>Tiempo juntos</h3>
+                        <div class="timer-display">
+                            <div class="timer-item">
+                                <div class="timer-value" id="togetherMonths">--</div>
+                                <div class="timer-label">meses</div>
+                            </div>
+                            <div class="timer-item">
+                                <div class="timer-value" id="togetherDays">--</div>
+                                <div class="timer-label">días</div>
+                            </div>
+                            <div class="timer-item">
+                                <div class="timer-value" id="togetherHours">--</div>
+                                <div class="timer-label">horas</div>
+                            </div>
+                            <div class="timer-item">
+                                <div class="timer-value" id="togetherMins">--</div>
+                                <div class="timer-label">min</div>
+                            </div>
+                            <div class="timer-item">
+                                <div class="timer-value" id="togetherSecs">--</div>
+                                <div class="timer-label">seg</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="signature-final">
+                        <p>Te amo muchisimo,</p>
+                        <p class="name">Erick</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PASSWORD = "1402";
+        const RELATIONSHIP_START = new Date(2025, 7, 27, 20, 28, 0); // 27 Agosto 2025, 8:28 PM
+
+        const milestones = [
+            { date: new Date(2025, 6, 2, 18, 4) },     // 2 Julio 2025, 6:04 PM
+            { date: new Date(2025, 8, 2, 10, 22) },   // 2 Septiembre 2025, 10:22 AM
+            { date: new Date(2025, 7, 27, 20, 28) },  // 27 Agosto 2025, 8:28 PM
+            { date: new Date(2025, 8, 21, 17, 20) }   // 21 Septiembre 2025, 5:20 PM
+        ];
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const input = document.getElementById('passwordInput');
+            input.addEventListener('keypress', e => { if (e.key === 'Enter') checkPassword(); });
+            input.focus();
+            setInterval(updateAllCounters, 1000);
+        });
+
+        function vibrate(pattern) {
+            if (navigator.vibrate) navigator.vibrate(pattern);
+        }
+
+        function checkPassword() {
+            const input = document.getElementById('passwordInput');
+            const error = document.getElementById('errorMsg');
+            const modal = document.getElementById('passwordModal');
+
+            if (input.value === PASSWORD) {
+                vibrate(200);
+                modal.style.opacity = '0';
+                modal.style.transition = 'opacity 0.5s';
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    document.getElementById('messagesSection').classList.add('show');
+                    document.querySelectorAll('.floating-cat').forEach(cat => cat.classList.add('visible'));
+                    revealMessagesWithTyping();
+                    updateAllCounters();
+                }, 500);
+            } else {
+                vibrate([100, 80, 100, 80, 100]);
+                error.classList.add('show');
+                input.value = '';
+                input.focus();
+                const box = document.querySelector('.password-box');
+                box.style.animation = 'shake 0.4s ease';
+                setTimeout(() => box.style.animation = '', 400);
+                setTimeout(() => error.classList.remove('show'), 3000);
+            }
+        }
+
+        const style = document.createElement('style');
+        style.textContent = `@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-8px)} 80%{transform:translateX(8px)} }`;
+        document.head.appendChild(style);
+
+        function typeText(element, text, speed = 30) {
+            return new Promise(resolve => {
+                element.innerHTML = '';
+                const cursor = document.createElement('span');
+                cursor.className = 'typing-cursor';
+                element.appendChild(cursor);
+
+                let i = 0;
+                function type() {
+                    if (i < text.length) {
+                        element.insertBefore(document.createTextNode(text.charAt(i)), cursor);
+                        i++;
+                        setTimeout(type, speed);
+                    } else {
+                        setTimeout(() => {
+                            cursor.remove();
+                            resolve();
+                        }, 500);
+                    }
+                }
+                type();
+            });
+        }
+
+        async function revealMessagesWithTyping() {
+            const messages = document.querySelectorAll('.message-bubble');
+            const nextBtn = document.getElementById('nextBtn1');
+
+            for (let i = 0; i < messages.length; i++) {
+                const msg = messages[i];
+                msg.classList.add('visible');
+                msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                vibrate(80);
+
+                const textEl = msg.querySelector('.typing-text');
+                if (textEl) {
+                    const originalText = textEl.textContent;
+                    await typeText(textEl, originalText, 25);
+                }
+
+                if (i < messages.length - 1) {
+                    await new Promise(r => setTimeout(r, 500));
+                }
+            }
+
+            setTimeout(() => {
+                nextBtn.classList.add('visible');
+                vibrate(150);
+                createHearts();
+            }, 500);
+        }
+
+        function showMomentsSection() {
+            vibrate(100);
+            document.getElementById('messagesSection').classList.remove('show');
+            document.getElementById('momentsSection').classList.add('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(revealMoments, 500);
+        }
+
+        function revealMoments() {
+            const moments = document.querySelectorAll('.moment-card');
+            const nextBtn = document.getElementById('nextBtn2');
+
+            moments.forEach((m, i) => {
+                setTimeout(() => {
+                    m.classList.add('visible');
+                    m.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    vibrate(80);
+                    if (i === moments.length - 1) {
+                        setTimeout(() => { nextBtn.classList.add('visible'); createHearts(); }, 800);
+                    }
+                }, 1200 * (i + 1));
+            });
+        }
+
+        function showFinalSection() {
+            vibrate(100);
+            document.getElementById('momentsSection').classList.remove('show');
+            document.getElementById('finalSection').classList.add('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(revealPhotos, 500);
+        }
+
+        function revealPhotos() {
+            const photos = document.querySelectorAll('.photo-item');
+            const finalMsg = document.getElementById('finalMessage');
+
+            photos.forEach((photo, i) => {
+                setTimeout(() => {
+                    photo.classList.add('visible');
+                    photo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    vibrate(80);
+                    if (i === photos.length - 1) {
+                        setTimeout(() => {
+                            finalMsg.classList.add('visible');
+                            finalMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            vibrate([150, 100, 150, 100, 200]);
+                            createHearts();
+                            createHearts();
+                        }, 2000);
+                    }
+                }, 2000 * (i + 1));
+            });
+        }
+
+        function updateAllCounters() {
+            const now = new Date();
+
+            milestones.forEach((m, i) => {
+                const diff = now - m.date;
+                const totalMins = Math.floor(diff / (1000 * 60));
+                const totalHours = Math.floor(diff / (1000 * 60 * 60));
+                const totalDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const months = Math.floor(totalDays / 30);
+                const days = totalDays % 30;
+                const hours = totalHours % 24;
+                const mins = totalMins % 60;
+
+                const idx = i + 1;
+                document.getElementById(`months${idx}`).textContent = months;
+                document.getElementById(`days${idx}`).textContent = days;
+                document.getElementById(`hours${idx}`).textContent = hours;
+                document.getElementById(`mins${idx}`).textContent = mins;
+            });
+
+            const togetherDiff = now - RELATIONSHIP_START;
+            const tTotalSecs = Math.floor(togetherDiff / 1000);
+            const tTotalMins = Math.floor(tTotalSecs / 60);
+            const tTotalHours = Math.floor(tTotalMins / 60);
+            const tTotalDays = Math.floor(tTotalHours / 24);
+            const tMonths = Math.floor(tTotalDays / 30);
+            const tDays = tTotalDays % 30;
+            const tHours = tTotalHours % 24;
+            const tMins = tTotalMins % 60;
+            const tSecs = tTotalSecs % 60;
+
+            document.getElementById('togetherMonths').textContent = tMonths;
+            document.getElementById('togetherDays').textContent = tDays;
+            document.getElementById('togetherHours').textContent = tHours;
+            document.getElementById('togetherMins').textContent = tMins;
+            document.getElementById('togetherSecs').textContent = tSecs;
+        }
+
+        function createHearts() {
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart-particle';
+                    heart.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+                    heart.style.left = Math.random() * window.innerWidth + 'px';
+                    heart.style.top = Math.random() * window.innerHeight + 'px';
+                    document.body.appendChild(heart);
+                    setTimeout(() => heart.remove(), 3000);
+                }, i * 100);
+            }
+        }
+    </script>
+</body>
+
+</html>
